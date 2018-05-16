@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Race Checker</title>
+        <script src="js/jquery.min.js"></script>
+        <link  href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <script src="js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type='text/javascript'>
+        /* global $*/
+        $(document).ready( function(){
+          function refresh() {
+            $.ajax({
+      type: "get",
+      url: "apiEndpoint.php",
+      dataType: "json",
+      success: function(data, status) {
+       $("#raceEvents").empty();
+       $("#raceEvents").append("<table class='table'>");
+                    $("#raceEvents").append("<tr><td>ID</td><td>Date</td><td>Start Time</td><td>Location</td><td></td><td></td></tr>");
+                      for (var i=0; i<data.length; i++){
+                        $("#raceEvents").append("<tr>");
+                        $("#raceEvents").append("<td>" + data[i].race_id + "</td>");
+                        var date = data[i].date[4] + data[i].date[5] + "/" + data[i].date[6] + data[i].date[7] + "/"+data[i].date[0] + data[i].date[1] + data[i].date[2] + data[i].date[3];
+                        $("#raceEvents").append("<td>" + date + "</td>");
+                        $("#raceEvents").append("<td>" + data[i].start_time + "</td>");
+                        $("#raceEvents").append("<td>" + data[i].locatio + "</td>");
+                        $("#raceEvents").append("<td><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='#editModal'>Edit</button></td>");
+                        $("#raceEvents").append("<td><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='#cancelModal'>Cancel</button></td>");
+                        $("#raceEvents").append("<tr>");
+                      }
+                    $("#raceEvents").append("</table>");
+                  },
+                  complete: function(data,status){
+                  }
+            });
+          }
+        $("#add").click(function(){
+          var Time_Start = $(".date").val();
+          var Time_start = Time_Start[0]+Time_Start[1]+Time_Start[2]+Time_Start[3]+Time_Start[5]+Time_Start[6]+Time_Start[8]+Time_Start[9];
+          var time_start = parseInt(Time_start);
+          
+        var data = 
+        {
+            "race_id":$(".race_id").val(),
+            "date":time_start,
+            "start_time":$(".start_time").val(),
+            "password":$(".password").val(),
+            "locatio":$(".locatio").val(),
+            "status": "Active"
+        }          
+      $.ajax({
+      type: "post",
+      url: "apiEndpoint.php",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(data),
+      success: function(data, status) {
+          console.log("Response " + data);
+      },
+      complete: function(data, status) {
+        //optional, used for debugging purposes
+        //console.log(status);
+      }
+            });
+            refresh();
+        });
+        
+      $(".active").click(function(){
+      refresh();
+        });
+        
+      $(".past").click(function(){
+      $.ajax({
+      type: "get",
+      url: "apiEndpointTwo.php",
+      dataType: "json",
+      success: function(data, status) {
+       $("#raceEvents").empty();
+       $("#raceEvents").append("<table class='table'>");
+                    $("#raceEvents").append("<tr><td>ID</td><td>Date</td><td>Start Time</td><td>Location</td><td></td><td></td></tr>");
+                      for (var i=0; i<data.length; i++){
+                        $("#raceEvents").append("<tr>");
+                        $("#raceEvents").append("<td>" + data[i].race_id + "</td>");
+                        var date = data[i].date[4] + data[i].date[5] + "/" + data[i].date[6] + data[i].date[7] + "/"+data[i].date[0] + data[i].date[1] + data[i].date[2] + data[i].date[3];
+                        $("#raceEvents").append("<td>" + date + "</td>");
+                        $("#raceEvents").append("<td>" + data[i].start_time + "</td>");
+                        $("#raceEvents").append("<td>" + data[i].locatio + "</td>");
+                        $("#raceEvents").append("<td><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='#editModal'>Edit</button></td>");
+                        $("#raceEvents").append("<td><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='#cancelModal'>Cancel</button></td>");
+                        $("#raceEvents").append("<tr>");
+                      }
+                    $("#raceEvents").append("</table>");
+                  },
+                  complete: function(data,status){
+                  }
+            });
+        });
+        // get Quiz
+        refresh();
+      });
+            
+        </script>
+    </head>
+
+    <body>
+        <div class="container" id = "raceEvents" align="center">
+            
+        </div>
+        <div class="container" align="center">
+          <table class = 'table'>
+            <tr>
+            <td><button type='button' class ='past' >Past</button></td>
+            <td><button type='button' class ='active' >Active</button></td>
+            <td><button type='button' class ='addPage' data-toggle='modal' data-target='#addModal'>Add Race</button></td>
+            </tr>
+            </table>
+        </div>
+        <div id="cancelModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cancel Page</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are You Sure You Want to Cancel this Race?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id = "cancel">Cancel Race</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="addModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add a Race</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          Race Code:
+          <input type = "text" class = 'race_id'>
+          Date:
+          <input type="date" class ='date'>
+          Start Time:
+          <select class="start_time">
+          <option value="12:00 AM">12:00 AM</option>
+          <option value="1:00 AM">1:00 AM</option>
+          <option value="2:00 AM">2:00 AM</option>
+          <option value="3:00 AM">3:00 AM</option>
+          <option value="4:00 AM">4:00 AM</option>
+          <option value="5:00 AM">5:00 AM</option>
+          <option value="6:00 AM">6:00 AM</option>
+          <option value="7:00 AM">7:00 AM</option>
+          <option value="8:00 AM">8:00 AM</option>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="3:00 PM">3:00 PM</option>
+          <option value="4:00 PM">4:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+          <option value="6:00 PM">6:00 PM</option>
+          <option value="7:00 PM">7:00 PM</option>
+          <option value="8:00 PM">8:00 PM</option>
+          <option value="9:00 PM">9:00 PM</option>
+          <option value="10:00 PM">10:00 PM</option>
+          <option value="11:00 PM">11:00 PM</option>
+        </select>
+          Location:
+          <input type = "text" class = 'locatio'>
+          Password:
+          <input type = "text" class = 'password'>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id = "add">Add</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left">#</th>
+<th style="text-align:left">Task Description</th>
+<th style="text-align:left">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left"><font color="green">You provide a ERD diagram representing the data and its relationships, with at least one transactional and one code table. This may be included in Cloud9 as a picture or from a designer tool</font></font></td>
+<td style="text-align:left">10</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left"><font color="green">Tables in MySQL match the ERD and support the requirements of the application</font></td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left"><font color="green">The list of races is pulled from MySQL using the API endpoint and displayed using the specified page design</font></td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left"><font color="green">Canceled races do not show up in the Dashboard list<font color="green"></td>
+<td style="text-align:left">5</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left"><font color="green">Old races do not show up in the Dashboard list</font></td>
+<td style="text-align:left">5</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left"><font color="green">A user can add a race to the MySQL using the API endpoint and displayed using the specified modal design<font color="green"></td>
+<td style="text-align:left">15</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">A user can cancel a race in MySQL using the API endpoint</td>
+<td style="text-align:left">15</td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td style="text-align:left"><font color="green">The user confirms the cancelation using the specified modal design</font></td>
+<td style="text-align:left">10</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">TOTAL</td>
+<td style="text-align:left">100</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"><font color="green">This rubric is properly included AND UPDATED (BONUS)</font></td>
+<td style="text-align:left">2</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">Login works with a User table and BCrypt</td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left"><font color="green">The app is deployed to Heroku</font></td>
+<td style="text-align:left">15</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">A car image can be uploaded and displayed</td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">Racers can signup for a race</td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">When racers signup, they can pick the make, model and year of their car using the API</td>
+<td style="text-align:left">35</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">The race page shows the list of all racers who have signed up for the race, and the admin can open the race from the dashboard</td>
+<td style="text-align:left">25</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">The race page is password protected</td>
+<td style="text-align:left">10</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left"><font color="green">Admins can see all the past races</font></td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">Users can filter records based on text that is showing</td>
+<td style="text-align:left">15</td>
+</tr>
+<tr>
+<td style="text-align:left">BD</td>
+<td style="text-align:left">Racer report shows all models of cars and number of racers, even those that do not have racers</td>
+<td style="text-align:left">20</td>
+</tr>
+</tbody>
+</table>
+
+
+    </body>
+
+</html>
