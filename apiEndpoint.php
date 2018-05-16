@@ -1,5 +1,5 @@
 <?php
-include 'DBConnection.php';
+include 'MDBConnection.php';
 $dbConn = getDatabaseConnection('races');
 $date = date("Ymd");
 $curr_date = (int)$date;
